@@ -3,8 +3,4 @@
 
 # stats101
 
-<!-- badges: start -->
-
-<!-- badges: end -->
-
-[notes](http://dkidney.github.io/stats101/index.html)
+#### <https://dkidney.github.io/stats101/>

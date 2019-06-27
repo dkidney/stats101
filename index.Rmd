@@ -1,5 +1,17 @@
-Hello World
+---
+title: "Stats 101"
+date: '`r format(Sys.Date(), "%d %b %Y")`'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 <!-- * [principal components](notes/principal-components.html) -->
 
-* [test](notes/test.html)
+<br>
+
+### [test2](notes/test.html)
+
+### [test2](notes/test.html)
