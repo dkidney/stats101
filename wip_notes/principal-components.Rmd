@@ -1,0 +1,153 @@
+---
+title: Principal components
+output: 
+    html_document:
+        toc: true
+        toc_depth: 4
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE
+)
+```
+
+********************************************************************************
+
+### Data
+
+Begin with data matrix $X$ with $p$ columns, each representing a different variable, and $n$ rows, where the $i^{th}$ row looks like,
+
+$$ x_i = (x_{i1}, ..., x_{ip}) $$
+
+where each variable has been **scaled** by dividing by the standard deviation.
+
+```{r, fig.height = 4, fig.width = 4, out.height = 300, out.width = 300, dpi = 300}
+suppressMessages(require(mvtnorm))
+Sigma = matrix(c(3,1.6,1.6,2),2) # covariance matrix
+set.seed(1)
+X = rmvnorm(1000, sigma = Sigma)
+X = apply(X, 2, function(x) scale(x)) # centre and scale
+colnames(X) = c("X1","X2")
+par(mar = c(4,4,2,1))
+plot(X, pch = 19, cex = 0.5, col="grey", asp = 1, main = "Scaled data")
+```
+
+********************************************************************************
+
+### Eigenvalues and eigenvectors of the covariance matrix
+
+Eigenvectors and eigenvalues are calculated for the empirical sample covariance matrix of $X$.
+
+* The eigenvector of $\mbox{Cov}[X]$ with the largest eigenvalue gives the axis of most variation in the data.
+
+* The eigenvector of $\mbox{Cov}[X]$ with the second largest eigenvalue gives the axis of the second most variation in the data which is orthognal to the first eigenvector.
+
+* The eigenvector of $\mbox{Cov}[X]$ with the thrid largest eigenvalue gives the axis of the third most variation in the data which is orthognal to the first two eigenvectors.
+
+* Etc.
+
+The eigenvalues are proportional to the variance of the data in the directions of the eigenvectors.
+
+The sum of the eigenvalues is equal to the trace of the covariance matrix.
+
+If the data has been scaled then:
+
+* the covariance matrix will be equal to the correlation matrix
+* the eigenvectors will all be of length 1
+* the sum of the eigenvalues will equal $p$
+
+```{r}
+e = eigen(cov(X)) ; e
+# Proportion of variance
+e$values/sum(e$values)
+```
+
+```{r, fig.height = 4, fig.width = 8, out.height = 300, out.width = 600, dpi = 300}
+# Eigenvectors
+par(mfrow = c(1,2), mar = c(4,4,2,1))
+plot(X, pch = 19, cex = 0.5, col="grey", asp = 1, main = "E.vectors")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,], y1 = e$vectors[2,], col = 2, length = 0.05, lwd = 2)
+
+# Scaled eigenvectors
+plot(X, pch = 19, cex = 0.5, col="grey", asp = 1, main = "E.vectors scaled by sqrt e.values")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,]*sqrt(e$values), y1 = e$vectors[2,]*sqrt(e$values), col = 2, length = 0.05, lwd = 2)
+```
+
+********************************************************************************
+
+### Weights and scores
+
+The **weights**, also known as the **loadings**, are just the eigenvectors of $\mbox{Cov}[X]$.
+
+* The first eigenvector gives the weights for component 1.
+* The second eigenvector gives the weights for component 2.
+* Etc.
+
+They are used to calculate the *scores*, which are the values of the data points on the principal components axes.
+
+$$ C_k = X \cdot w_k $$
+
+where the vector of $p$ weights for component $k$ is, 
+
+$$ w_k = (w_1,...,w_p) $$
+
+One way to think about this is that the eigenvalues act as a **rotation matrix** that rotates the original data onto a new set of axes.
+
+Another way to think about it is that component $k$ is a weighted sum of the original variables.
+
+```{r, fig.height = 4, fig.width = 4, out.height = 300, out.width = 300, dpi = 300}
+scores = X %*% e$vectors
+colnames(scores) = c("PC1","PC2")
+par(mar = c(4,4,2,1))
+plot(scores, pch = 19, cex = 0.5, col="grey", asp = 1, main = "PC axes")
+arrows(x0 = 0, y0 = 0, x1 = c(1,0)*sqrt(e$values), y1 = c(0,1)*sqrt(e$values), col = 2, length = 0.05, lwd = 2)
+```
+
+********************************************************************************
+
+### Why scale?
+
+PCA is sensitive to the scaling of the variables. 
+
+Look what happens if we multlply $x_1$ by 10 (e.g. converting centimetres to millimetres),
+
+```{r, fig.height = 4, fig.width = 4, out.height = 300, out.width = 300, dpi = 300}
+X[,1] = X[,1] * 10
+e = eigen(cov(X)) ; e
+par(mar = c(4,4,2,1))
+plot(X, pch = 19, cex = 0.5, col="grey", asp = 1, main = "Unscaled variables")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,]*sqrt(e$values), y1 = e$vectors[2,]*sqrt(e$values), col = 2, length = 0.05, lwd = 2)
+```
+
+```{r, echo=FALSE}
+X[,1] = X[,1] / 10
+```
+
+The first eigenvalue is now much larger relative to the second eigenvalue and the eigenvectors now look almost parallel to the original axes.
+
+Scaling the columns of $X$ prior to calculating the eigenvalues avoids these effects and makes PCA less arbitrary.
+
+********************************************************************************
+
+### Covariance
+
+$X^TX$ is proportional to $\mbox{Cov}[X]$.
+
+```{r, fig.height = 4, fig.width = 8, out.height = 300, out.width = 600, dpi = 300}
+t(X) %*% X
+cov(X)
+```
+
+********************************************************************************
+
+<!-- #### See also -->
+
+<!-- <a href="Eigenvalues and eigenvectors.html">Eigenvalues and eigenvectors</a>  -->
+
+<!-- <a href="Matrix decompositions.html">Matrix decompositions</a>  -->
+
+<!-- ******************************************************************************** -->
+

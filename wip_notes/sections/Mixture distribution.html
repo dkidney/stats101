@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Mixture distribution</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</head>
+
+<body>
+<h2>Mixture distribution</h2>
+
+<hr/>
+
+<p>This describes the distribution of random variables whose values are derived from an underlying set of other distributions. Each random variable in a mixture distribution has a certain probability of coming from each of the underlying distriutions.</p>
+
+<p>The individual distributions that combined to form the mixture distribution are called <strong>mixture components</strong> and the probabilities (or weights) associated with them are called <strong>mixture weights</strong>.</p>
+
+<hr/>
+
+<h3>Finite mixtures</h3>
+
+<p>If a mixture distribution is composed of \( K \) mixture components (where \( 0 < K < \infty \)), the probability density function of the mixture distribution can be expressed as,</p>
+
+<p>\[  f(x) = \sum_{k=1}^K w_k p_k(x)  \]</p>
+
+<p>where,</p>
+
+<p>\( w_k \) = the weight for component \( k \)</p>
+
+<p>\( p_k(x) \) = the probability density function for component \( k \)</p>
+
+<p>The weights also have the constraints that they must be individually between 0 and 1 (i.e. \( 0 \leq w_i \leq 1 \)) and sum to 1 (i.e. \( \sum w_i = 1 \)).</p>
+
+<hr/>
+
+<h3>Example: Mixture of two normal distributions</h3>
+
+<p>Assume we have some data that come from a mixture of two normal distributions, with means \( \mu_1 \) and \( \mu_2 \) and standard deviations \( \sigma_1 \) and \( \sigma_2 \). </p>
+
+<p>In this case the pdf of the mixture distribtion can be written as,</p>
+
+<p>\[  f(x ; \mu_1, \mu_2, \sigma_1, \sigma_2) = \sum_{k=1}^2 w_k p_k(x ; \mu_k, \sigma_k)  \]</p>
+
+<hr/>
+
+<h3>See also</h3>
+
+<p><a href="EM algorithm.html">EM algorithm</a> </p>
+
+<p><a href="Mixture model.html">Mixture model</a> </p>
+
+<hr/>
+
+<p><a href="index.html#M">(back to M)</a> </p>
+
+<p><a href="index.html">(back to index)</a> </p>
+
+</body>
+
+</html>
+

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Survival analysis</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</head>
+
+<body>
+<h2>Survival analysis</h2>
+
+<hr/>
+
+<h3>Survival times</h3>
+
+<p>Let&#39;s assume that survival times come from an <a href="Exponential distribution.html#S">exponential distribution</a>.</p>
+
+<p>\[  T \sim Exp(\lambda)  \]</p>
+
+<p>For example, if \( \lambda = 0.05 \), then the distribution would look like this:</p>
+
+<pre><code class="r">lambda = 0.05
+tmax = 100
+curve(dexp(x, lambda), col = 4, main = &quot;Distribution of survival times&quot;, ylab = &quot;Density&quot;, 
+    xlab = &quot;Time&quot;, xlim = c(0, tmax), ylim = c(0, dexp(0, lambda)), from = 0, 
+    xaxs = &quot;i&quot;, yaxs = &quot;i&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-1"/> </p>
+
+<p>This might represent the distribution of survival times in years for some Medieval population.</p>
+
+<p>The distribution of survival times is sometimes called the <strong>event density</strong>.</p>
+
+<hr/>
+
+<h3>Survival function</h3>
+
+<p>This gives the probabilty that time of death, \( T \), occurs after time \( t \).</p>
+
+<p>\[  S(t) = P(T > t)  \]</p>
+
+<p>If we wanted to calculate this from the distribution of survival times we would calculate the area under the curve between \( t \) and \( \infty \). For the exponential distribution we would get,</p>
+
+<p>\[  S(t) = \int_t^\infty \lambda e^{-\lambda t} = 1 - \int_{-\infty}^t \lambda e^{-\lambda t} = 1 - \left[1 - e^{-\lambda t} \right] = e^{-\lambda t}  \]</p>
+
+<p>If \( \lambda = 0.05 \), the probability of surviving beyond a time of \( t=20 \) years in our Medieval population would be,</p>
+
+<p>\[  S(20) = e^{-0.05 \times 20} = 0.3678798  \]</p>
+
+<pre><code class="r">t = 20
+integrate(function(x, lambda) dexp(x, lambda), lambda = lambda, lower = t, upper = Inf)
+</code></pre>
+
+<pre><code>## 0.3679 with absolute error &lt; 4e-05
+</code></pre>
+
+<pre><code class="r">curve(dexp(x, lambda), col = 4, main = &quot;Distribution of survival times&quot;, ylab = &quot;Density&quot;, 
+    xlab = &quot;Time&quot;, ylim = c(0, dexp(0, lambda)), xlim = c(0, tmax), xaxs = &quot;i&quot;, 
+    yaxs = &quot;i&quot;)
+abline(v = t, lty = 2)
+xvals = seq(t, tmax, length = 100)
+polygon(c(t, xvals, tmax), c(0, dexp(xvals, lambda), 0), col = &quot;pink&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAFoCAMAAACMkBkOAAAAllBMVEX9/v0AAAAAADkAAGUAAP8AOTkAOY8AZo8AZrU5AAA5ADk5AGU5OQA5OWU5OY85ZrU5j9plAABlADllAGVlOQBlOY9lZjlltbVltf2POQCPOTmPOWWPZgCPj2WPtY+P27WP29qP2/21ZgC1tWW1/rW1/v3ajznatWXa24/a/rXa/tra/v39tWX924/9/rX9/tr9/v3/wMs3fWoBAAAAMnRSTlP///////////////////////////////////////////////////////////////8A/7N2ihAAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAzXSURBVHic7Z0Lm5vGFUCD7G61cbvVOn1IbtNGaqzEXWkl//8/V4YBJCQQA1yGGe45XxyvELrCHO68YGZ/OINKfpj6AGAaEK8UxCsF8UpBvFIQrxTEKwXxSkG8UhCvFMQrBfFKQbxSEK8UxCsF8UpBvFIQrxTEKwXxSkG8UhCvFMQrBfFKQbxSohD//poY1uanD18v23frcocPX0+b67fKHaqfqOf4nCy2TsdRE+uy0fHbwiAm8cmqunmXrK9e1Yiv7tCM634NB5d/76Ao3olEvDm3h+TD1+ynNEETk+HppbA8bRZ/Txb/sRn/3yR5erNXwPvr0/+yHexn9/aysfuUF4jdmgVKP3c+55HLCG82+p+S5dl4zWLtihfp8SSmoMjFn8pvOyR/3KRR9lkRlX3H+hI6GCISb1LK/GTzP/dqrX17zS8EY7BG/C57a3nO91nasPnWi/g88tuVePP6N/Pu++tia7WWL+zONeILym9elaEnPItVYhK/t+KPz/n5M2Vrer6XRR2fnd/FttSW7WA/kWWmeSvd51Cmd761LKSLyNfil+Zlus8hd1y+KA6sUtRb8eYbzbEutllEE6486FCIUHyWPGaDFW+aZZfGXbrtXvwhy/G9eStzbR2UW0vxReTron6b7bMqY5Uv7O614pfn4hLJsz8vHyjqO1It6rPqMskTtav44q1znfgi8q349EdTmdjjKF5k+zaLtx8uxZcHHQoRiT/cnuVb8WVRn27fJ/VF/ZX4+6K+iFxGyMWfd4ufTdvQfnv+wmT+8blFfLWED6ndH4n4pGwjZfVn2XBaVsTn7afd1Q+3jbsr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" alt="plot of chunk unnamed-chunk-2"/> </p>
+
+<p>So for survival times following the exponential distribution with \( \lambda = 0.05 \), the survival function would look like this,</p>
+
+<pre><code class="r">curve(exp(-lambda * x), col = 4, main = &quot;Survival function&quot;, ylab = &quot;S(t)&quot;, 
+    xlab = &quot;Time&quot;, ylim = c(0, 1), xlim = c(0, tmax), xaxs = &quot;i&quot;, yaxs = &quot;i&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAFoCAMAAACMkBkOAAAAjVBMVEX9/v0AAAAAADkAAGUAAP8AOTkAOY8AZrU5AAA5ADk5AGU5OQA5OWU5OY85j9plAABlADllAGVlOQBlOY9lZjllZrVltbVltf2POQCPOTmPZgCPj2WPtY+P29qP2/21ZgC1ZmW1tWW1/tq1/v3ajznatWXa24/a/rXa/tra/v39tWX924/9/rX9/tr9/v37FUPAAAAAL3RSTlP/////////////////////////////////////////////////////////////AFqlOPcAAAAJcEhZcwAACxIAAAsSAdLdfvwAAArESURBVHic7d0Nd+LGFYDhCFPjpF28adrANi0kMU1rPvT/f140ksBgJBDS1cydue97zmYXG09sPxoh8TF8l5PJvgv9DVCYgDca8EYD3mjAGw14owFvNOCNBrzRgDca8EYD3mjAGw14owFvNOCNBrzRgDca8EYD3mjAGw14owFvNOCNBrzRkoPfv2bZ8/uNTz+9tX9w95JNVjcGXy+aB4iw1OCde5bNHv2iGnOdLW5d786noyo1+N3L87tzPCwLy/3r8/thOflHNvlruS2ss5n73Pp4Id8WG0kxxWv4w7K4+Pz/j698+i3L3GfcJ9yQbpOqrrsp/jl3nzheJbrSg69m5Rm80/yv2/3vXycr57b9uOB2D9WWkjfAZ9Xeo/rH0+8f8OuLzzy6g1FRavAlRUFzDj9zHy4m9jY77g3qC+4L3AcudvXnXzkvr7Z7Ka0X5R933d1LuZuYrE5XCfoz9yo1+LycjZe7ene4timEjm6nC9UhQTt8yfv8vnV79eOnq13GrBxycbpKoJ91QOnBV7v7z/DFP//3Wn6o+nh5obhidgu+/sf2uC9vgK+vEuxn7V1q8BtnsnYkBdImO8Hn68kvbuJWxvUFN/PdfvwT/Okra9VyV3++yzjb1QOvpOMkro+/PuDrU/TKuL6wzRpm/NlXXhzlVWN+PrgDXktOvhLOsp8/dvXV6dvplL264ADnxR77Ev7jK0+q62rMYuzqNuLsdA54iirgjQa80YA3GvBGA95owBsNeKMBbzTgjQa80YA3GvBGA95owBsNeKPdh6+e0xLnk8eptbvwh2X16pFtjE8zodbuwu9/fLv4m9KIGW+0+7fx1euM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" alt="plot of chunk unnamed-chunk-3"/> </p>
+
+<p>It is generally assumed that \( S(0)=1 \)</p>
+
+<p>It is also usually assumed that as \( t \) increases \( S(t) \) decreases (i.e. \( S(t) \rightarrow 0 \) as \( t \rightarrow \infty \)).</p>
+
+<hr/>
+
+<h3>Lifetime distribution function</h3>
+
+<p>This gives the probabilty that time of death occurs <em>by</em> time \( t \). You could think of this as the opposite of the survival function.</p>
+
+<p>\[  F(t) = P(T \leq t) = 1 - S(t)  \]</p>
+
+<p>This is the same as the <strong>cdf</strong> of the distribution of survival times - i.e. it gives the cumulative probability of death over time. </p>
+
+<p>Equivalently you could think of it as giving the expected <em>proportion</em> of individuals in a population that have already died by time \( t \).  </p>
+
+<p>For the exponential distribution it would look like this,</p>
+
+<p>\[  F(t) = \int_{-\infty}^t \lambda e^{-\lambda t} = 1 - e^{-\lambda t}  \]</p>
+
+<p>&hellip;and for the exponential distribution with \( \lambda = 0.05 \) it would look this this,</p>
+
+<pre><code class="r">curve(1 - exp(-lambda * x), col = 4, main = &quot;Lifetime distribution function&quot;, 
+    ylab = &quot;F(t)&quot;, xlab = &quot;Time&quot;, ylim = c(0, 1), xlim = c(0, tmax), xaxs = &quot;i&quot;, 
+    yaxs = &quot;i&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAFoCAMAAACMkBkOAAAAkFBMVEX9/v0AAAAAADkAAGUAAP8AOTkAOY8AZo8AZrU5AAA5ADk5AGU5OWU5OY85j485j9plAABlADllAGVlOQBlOY9lZjllZrVltbVltf2POQCPOTmPZgCPj2WPtY+P27WP29qP2/21ZgC1ZmW1tWW1/tq1/v3ajzna24/a/rXa/tra/v39tWX924/9/rX9/tr9/v3d1EL2AAAAMHRSTlP//////////////////////////////////////////////////////////////wBipdB4AAAACXBIWXMAAAsSAAALEgHS3X78AAAK6ElEQVR4nO3dC3vixhWA4chutzjpFm+StrC9QVOTZLn9/39XjSSuEiCkMzNn5nzf8yReW2ji8DKSwHj2uz2Z7LvY3wDFCXijAW804I0GvNGANxrwRgPeaMAbDXijAW804I0GvNGANxrwRgPeaMAbDXijAW804I0GvNGANxrwRgPeaMAbLQn4zdunb+7j9v31o/ykeFmcti1n9Zfvtn3/9O3yVuVuh02vH7t5e4D74159E616fVdRSwq+alnMzjZdfnYrB3/xhcvdOuAfjDtus4aSgi8n0f/mRVGUn63KD7NSrPwwcXNrXfxpXrx+rIrqLq+31rnb/P0w48uZWrgZ7nbbzV/+Wrz8u57xv1SjVo+A8lHy+3Hceqxp9eD4xe17GLIob1Tf+Ntpk9twGP7m3jpKFH5ZuKbn8IfKe7fZWu1b3cTt4m61fS9qshre/fm390bK3aYDvh5rchhnchzzHP7iNvX3eHtvHaUG/1EdRqsvVErusxr+9aOczrPt+8vitLXat/y4auCP54xlfbiYHM7x5aPE7XmA/3Ycd/NWnsvrTeVt1sXF/if4elP133KbHuytoTThm/ld3qsn+Elj+LI4bS1b17pnM949IGo4d4vTxV35tTZ8tXv5wJlVtz5eK1zBN5vWzVHm0d4aygu+RrgNX53jD7s9C3/Y5LqCb/6wPhzLH+ytoTThT5f5XfAXTwIuDvXHXa7hj4f68uvuxl0H6zZ8c+Pjpua/NX20t4YSga+v1o7wzUVTBXS4uDvBn7bury7u6oHqi67JBfxpuMtxzy7PruGPN95dXuU1w9/ZW0OJwlf3qLsby03VhfkF/HGr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" alt="plot of chunk unnamed-chunk-4"/> </p>
+
+<p>The derivative of \( F(t) \) takes us back to the original distribution for the survival times. </p>
+
+<p>For the exponential distribution we would have,</p>
+
+<p>\[  f(t) = \frac{d}{dt} F(t) = \frac{d}{dt} \left[1 - S(t)\right] = \frac{d}{dt} 1 - e^{-\lambda t} = \lambda e^{-\lambda t}  \]</p>
+
+<pre><code class="r">D(expression(1 - exp(-lambda * t)), &quot;t&quot;)
+</code></pre>
+
+<pre><code>## exp(-lambda * t) * lambda
+</code></pre>
+
+<p>You can also think of the event density as being proportional to the <strong>death rate per unit time</strong> - i.e. it gives the rate of change in the proportion of indivduals that have died.</p>
+
+<p>\[  f(t) = \underset{dt \; \rightarrow \; 0}{\lim}{\frac{ F(t + dt) - F(t) }{ dt }}  \]</p>
+
+<p>For the exponential distribution this rate starts off being very high, but gradually decreases until eventually it falls off to almost zero at large values of \( t \), since by this time most of the population will have already died.</p>
+
+<hr/>
+
+<p><a id="Hazard function"></a></p>
+
+<h3>Hazard function</h3>
+
+<p>The formula for this is,</p>
+
+<p>\[  h(t) = \frac{ f(t) }{ S(t) }  \]</p>
+
+<p>Which is the event density at time \( t \), scaled by the the proportion of the population that are expected to still be alive at time \( t \).</p>
+
+<p>It&#39;s also called the <strong>hazard rate</strong> or <strong>failure rate</strong>, since it gives the (instantaneous) rate of death at time \( t \) for the those that have survived up to that point.</p>
+
+<p>It does <strong>not</strong> give a probability (since it can be any positive number) and it does <strong>not</strong> give a probability density (since it integrates to \( \infty \)).</p>
+
+<h4>An example</h4>
+
+<p>The hazard function for the exponential distribution looks like this,</p>
+
+<p>\[  \frac{ f(t) }{ S(t) } = \frac{ \lambda e^{-\lambda t} }{ e^{-\lambda t} } = \lambda  \]</p>
+
+<p>So the parameter \( \lambda \) can also be interpreted as the hazard, meaning that the hazard for the exponential distribution is constant over time (which is a consequence of the &#39;memoryless&#39; property of the exponential distribution).</p>
+
+<p>To illustrate, let&#39;s suppose we have 100000 people in our Medieval population. To make things easy, let&#39;s also pretend that they were all born at the same time. We would expect around 36788 people to survive to age 20 (\( S(20) \) = \( \exp(-0.05 \times 20) \) = \( 0.36788 \)). The instantaneous rate of death at year 20 will be \( f(20) \) = \( 0.05 \times \exp(-0.05 \times 20) \) = \( 0.0184 \), which means that at this point the proportion of dead people is increasing by about 1.8 % per year. Or to put it another way, at this point the number of dead people is increasing by about 1839.4 <em>people</em> per year (\( 100000 \times 0.0184 \) = \( 1839.4 \)). If that is the rate of death per year and there are 36788 people left in the population, that means that at this point the rate of death for the survivors is about 5% per year (\( 1839.4 / 36788 \) = \( 0.05 \), or alternatively \( 0.0184 / 0.36788 \) = \( 0.05 \)). This is the hazard, which is equal to our value for \( \lambda \). We can therefore interpret the hazard rate in this case as the proporion of the remaining survivors that are expected to die per year (or the yearly survival probability for each remaining survivor). Since the hazard is constant for the exponential distribution, it is the same regardless of the age of the survivors.</p>
+
+<p>Note that the value of the hazard is senstive to the units of time being used. If we have measured time in centuries for example instead of years the hazard would have been much larger (5 in this case), but it&#39;s meaning would have been the same (500% per century = 5% per year).</p>
+
+<hr/>
+
+<h3>Cumulative hazard function</h3>
+
+<p>This is the integral of the hazard function,</p>
+
+<p>\[  H(t) = \int_0^t h(t) \; dt  \]</p>
+
+<p>So for the exponential distribution, where \( h(t) = \lambda \), the cumulative hazard is \( H(t) = \lambda t \).</p>
+
+<p>In terms of our Medieval poplation, the cumulative hazard by year 20 is equal to 1 (\( 0.05 \times 20 \)) but this doesn&#39;t seem particularly intuitive to me.</p>
+
+<hr/>
+
+<p><a href="index.html#S">(back to S)</a> </p>
+
+<p><a href="index.html">(back to index)</a> </p>
+
+</body>
+
+</html>
+

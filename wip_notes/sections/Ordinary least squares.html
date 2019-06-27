@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Ordinary least squares (OLS)</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</head>
+
+<body>
+<h2>Ordinary least squares (OLS)</h2>
+
+<hr/>
+
+<h3>Model</h3>
+
+<p>\[  y = X\beta + \epsilon  \]</p>
+
+<h4>Assumptions</h4>
+
+<p>\( \mbox{E} \left[ \epsilon \right] = 0 \), which implies that \( \mbox{E} \left[ y \right] = X\beta \)</p>
+
+<p>\( \mbox{Var} \left[ \epsilon \right] = \sigma^2 I \), which implies that \( \mbox{Var} \left[ y \right] = \sigma^2 I \)</p>
+
+<p>\( \mbox{Cov} \left[ \epsilon_i, \epsilon_j \right] = 0 \) </p>
+
+<hr/>
+
+<h3>OLS estimator</h3>
+
+<p>\[  \widehat{\beta} = \left( X^TX \right)^{-1} X^Ty  \]</p>
+
+<h4>Derivation</h4>
+
+<p>We want to find the values of \( \beta \) which minimse the error sum of squares,</p>
+
+<p>\[  
+\begin{align}
+\widehat{\beta} &= \underset{\beta} {\mathrm{argmin}} \; \epsilon^T\epsilon \\
+                &= \underset{\beta} {\mathrm{argmin}} \; \left(y-X\beta\right)^T\left(y-X\beta\right) 
+\end{align}
+ \]</p>
+
+<p>So we need to find the derivative of the error sum of squares with respect to \( \beta \) and solve it,</p>
+
+<p>\[  \frac{ \partial }{ \partial\beta } \left(y-X\beta\right)^T\left(y-X\beta\right)  \]</p>
+
+<p>\[  = \frac{ \partial }{ \partial\beta } \left( y^Ty - 2(X\beta)^Ty + (X\beta)^T(X\beta) \right)  \]</p>
+
+<p>\[  = \frac{ \partial }{ \partial\beta } \left( y^Ty - 2\beta^TX^Ty + \beta^TX^TX\beta \right)  \]</p>
+
+<p>\[  = \frac{ \partial }{ \partial\beta } \left( y^Ty \right) - \frac{ \partial }{ \partial\beta } \left( 2\beta^TX^Ty \right) + \frac{ \partial }{ \partial\beta } \left( \beta^TX^TX\beta \right)  \]</p>
+
+<p>\[  = 0 + 2X^Ty - (X^TX + (X^TX)^T)\beta  \]</p>
+
+<p>because \( X^TX \) is square, this becomes,</p>
+
+<p>\[  = 0 + 2X^Ty - 2X^TX\beta  \]</p>
+
+<p>which is zero at,</p>
+
+<p>\[  0 = 2X^Ty - 2X^TX\widehat{\beta} X \]</p>
+
+<p>\[  2X^T\widehat{\beta} X = 2X^Ty  \]</p>
+
+<p>\[  X^T\widehat{\beta} X = X^Ty  \]</p>
+
+<p>\[  \widehat{\beta} = (X^TX)^{-1}X^Ty  \]</p>
+
+<hr/>
+
+<h3>Expected value of OLS estimator</h3>
+
+<p>\[  \mbox{E} \left[ \widehat{\beta} \right] = \beta  \]</p>
+
+<h4>Derivation</h4>
+
+<p>\[  \mbox{E} \left[ \widehat{\beta} \right] = \mbox{E} \left[ (X^TX)^{-1}X^Ty \right]  \]</p>
+
+<p>\[  = (X^TX)^{-1}X^T \mbox{E} \left[ y \right]  \]</p>
+
+<p>\[  = (X^TX)^{-1}X^T X\beta  \]</p>
+
+<p>\[  = \beta  \]</p>
+
+<hr/>
+
+<h3>Variance of OLS estimator</h3>
+
+<p>\[  \mbox{Cov} \left[ \widehat{\beta} \right] = \sigma^2 \left( X^T X \right)^{-1}  \]</p>
+
+<p>\[  \mbox{Var} \left[ \widehat{\beta}_j \right] = \sigma^2 \left( \left( X^T X \right)^{-1} \right)_{jj}  \]</p>
+
+<h4>Derivation</h4>
+
+<p>\[  \mbox{Cov} \left[ \widehat{\beta} \right] = \mbox{Var} \left[ (X^TX)^{-1}X^Ty \right]  \]</p>
+
+<p>\[  = \left( (X^TX)^{-1}X^T \right)^T \mbox{Var} \left[ y \right] \left( (X^TX)^{-1}X^T \right)  \]</p>
+
+<p>\[  = \left( (X^TX)^{-1}X \right) \mbox{Var} \left[ y \right] \left( (X^TX)^{-1}X^T \right)  \]</p>
+
+<p>I don&#39;t think I&#39;ve done this perfectly, but basically one of the \( (X^TX)^{-1} \) cancels out the two \( X \)&#39;s leaving,</p>
+
+<p>\[  = \mbox{Var} \left[ y \right] \left( X^T X \right)^{-1}  \]</p>
+
+<p>\[  = \sigma^2 I \left( X^T X \right)^{-1}  \]</p>
+
+<p>\[  = \sigma^2 \left( X^T X \right)^{-1}  \]</p>
+
+<hr/>
+
+<h3>Fitted values</h3>
+
+<p>\[  \widehat{y} = X\widehat{\beta}  \]</p>
+
+<p>\[  = X\left( X^TX \right)^{-1} X^Ty  \]</p>
+
+<p>\[  = Hy  \]</p>
+
+<p>where \( H = X\left( X^TX \right)^{-1} X^T \) is the <strong>hat matrix</strong>.</p>
+
+<hr/>
+
+<h3>Residuals</h3>
+
+<p>\[  \widehat{\epsilon} = y - \widehat{y}  \]</p>
+
+<p>\[  = y - Hy  \]</p>
+
+<p>\[  = (I - H)y  \]</p>
+
+<p>where \( I \) is an identity matrix.</p>
+
+<hr/>
+
+<p><a href="index.html#H">(back to H)</a> </p>
+
+<p><a href="index.html">(back to index)</a> </p>
+
+</body>
+
+</html>
+

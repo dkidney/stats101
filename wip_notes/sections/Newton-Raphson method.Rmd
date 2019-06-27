@@ -1,0 +1,147 @@
+
+## Newton-Raphson method
+
+********************************************************************************
+
+This is an iterative method for finding points of inflection of a function, e.g. $f(x)$.
+
+The algorithm procedes using the following steps:
+
+1. Take an intitial guess at the solution, e.g. $x_n$
+2. Approximate $f(x)$ using a second order Taylor series expansion about $x_n$ (i.e. a quadratic approxiation)
+3. Find the point of inflection of the quadratic approxiation (i.e. find the root of the first derivative of the quadratic approximation)
+4. Update the solution
+
+Iterate through steps 2-4 until the estimates converge.
+
+In general terms, consider the function $f(x)$.
+
+The second order <a href="Taylor series.html">Taylor series</a> approximation is,
+
+$$ f(x) \approx f(x_0) + f'(x_0)(x-x_0) + \frac{f''(x_0)}{2}(x-x_0)^2 $$
+
+To find the point of inflection of this quadratic function we take the first derivative,
+
+$$ \frac{d}{dx} f(x) \approx f'(x_0) + f''(x_0)(x-x_0) $$
+
+and solve it for x, 
+
+$$ f'(x_0) + f''(x_0)(x-x_0) = 0 $$
+
+$$ \implies x = x_0 - \frac{f'(x_0)}{f''(x_0)} $$
+
+The general update function is,
+
+$$ x_{n+1} = x_n - \frac{ f'(x_n) }{ f''(x_n) } $$
+
+********************************************************************************
+
+### Finding roots
+
+Notice that you can also think of the algorthim as finding the root of $f'(x_n)$.
+
+In general, if you wanted to find the root of $g(x)$ you would use the update function,
+
+$$ x_{n+1} = x_n - \frac{ g(x_n) }{ g'(x_n) } $$
+
+********************************************************************************
+
+### Example
+
+Consider a simple polynomial function,
+
+$$ f(x) = 3000 - 100x - 25x^2 - 0.25x^4 $$
+
+which has fist and second derivatives,
+
+$$ f'(x) = -100 - 50x - x^3 $$
+
+$$ f''(x) = -50 - 3x^2 $$
+
+The plots on the left hand side below show how $f(x)$ can be maximised using the Newton-Raphson method.
+
+Equivalently, the plots on the right hand side below show how the root of $f'(x)$ can found using the Newton-Raphson method.
+
+```{r, fig.height = 12, fig.width = 8}
+# Helper functions
+f = function(x) 3000 - 100*x - 25*x^2 - 0.25*x^4
+f.prime = function(x) -100 - 50*x - x^3 
+f.prime2 = function(x) -50 - 3*x^2 
+update = function(x) x - f.prime(x) / f.prime2(x)
+quadratic = function(a) curve(f(a) + f.prime(a)*(x-a) + f.prime2(a)/2*(x-a)^2, col=2, add = TRUE)
+linear = function(a) curve(f.prime(a) + f.prime2(a)*(x-a), col=2, add = TRUE)
+
+xn = 10 # initial guess
+
+par(mfrow = c(4,2), mar = c(4,4,2,2), oma = c(0,0,0,0))
+
+for(i in 1:4){
+
+    # update
+    xnew = update(xn)
+
+    # f(x)
+    curve(f(x), xlim = c(-10, 10), col = 4) 
+    abline(h=0, col = "grey")
+
+    # currential guess
+    text(xn, 0, paste("x", i-1, sep=""), pos = 1)
+    lines(c(xn, xn), c(0, f(xn)), lty = 3, col = 2)
+    points(xn, f(xn), pch = 19, col = 2)
+    quadratic(xn)
+
+    lines(c(xnew, xnew), c(0, f(xnew)), lty = 3, col = 3)
+    text(xnew, 0, paste("x", i, sep=""), pos = 1)
+    points(xnew, f(xnew), pch = 19, col = 3)
+    
+    title(paste("i =", i))
+
+    # f'(x)
+    curve(f.prime(x), xlim = c(-10, 10), col = 4)
+    abline(h=0, col = "grey")
+
+    # currential guess
+    text(xn, 0, paste("x", i-1, sep=""), pos = 1)
+    lines(c(xn, xn), c(0, f.prime(xn)), lty = 3, col = 2)
+    points(xn, f.prime(xn), pch = 19, col = 2)
+    linear(xn)
+
+    # update
+    lines(c(xnew, xnew), c(0, f.prime(xnew)), lty = 3, col = 3)
+    text(xnew, 0, paste("x", i, sep=""), pos = 1)
+    points(xnew, f.prime(xnew), pch = 19, col = 3)
+    
+    title(paste("x =", round(xnew,3), sep=""))
+
+    xn = xnew
+    
+}
+```
+
+
+And so on, and so on...
+
+Here's a function that does the same thing and judges convergence according to some tolerance.
+
+```{r}
+nr = function(x0, tol = 1e-5){
+    continue = TRUE
+    counter = 0
+    while(continue){
+        x1 = update(x0)
+        continue = abs(x1 - x0) > tol
+        x0 = x1
+        counter = counter + 1
+    }
+    cat(counter, "iterations")
+    return(x1)
+}
+nr(10)
+```
+
+********************************************************************************
+
+<a href="index.html#N">(back to N)</a> 
+
+<a href="index.html">(back to index)</a> 
+

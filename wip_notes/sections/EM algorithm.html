@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Expectation-maximization (EM) algorithm</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</head>
+
+<body>
+<h2>Expectation-maximization (EM) algorithm</h2>
+
+<hr/>
+
+<p>This is an iterative method for finding maximum likelihood estimates where the model depends on unobserved latent variables.</p>
+
+<p>The algorithm alternates between two steps: the expectation (E) step and the maximization (M) step.</p>
+
+<hr/>
+
+<p>Consider the following likelihood,</p>
+
+<p>\[  L(\theta ; Y, Z)  \] </p>
+
+<p>where,</p>
+
+<p>\( Y \) is a set of observed data</p>
+
+<p>\( \theta \) is a vector of parameters</p>
+
+<p>\( Z \) is a set of latent data or missing values</p>
+
+<p>The usual way of dealing with this situation is to sum out the latent variable to obtain a marginal form for the likelihood,</p>
+
+<p>\[  L(\theta ; Y, Z) = \sum_Z p(Y, Z ; \theta)  \] </p>
+
+<p>but this is often intractible. The EM algorithm offers an alternative solution.</p>
+
+<hr/>
+
+<h3>E step</h3>
+
+<p>This creates a function for the expectation of the complete-data log-likelihood, which is evaulated using the current estimates of the parameters, \( \theta^{(t)} \).</p>
+
+<p>\[  Q(\theta | \theta^{(t)}) = E_{Z \mid Y ; \theta^{(t)}} \left[ \ell(\theta ; Y, Z) \right]  \]</p>
+
+<p>This requires that we know \( p(Z | Y ; \theta) \) in order to calculate the expectation,</p>
+
+<p>\[  E_{Z \mid Y ; \theta^{(t)}} \left[ \ell(\theta ; Y, Z) \right]  = \sum_Z p(Z | Y ; \theta) \; \ell(\theta ; Y, Z)  \]</p>
+
+<p>which can be obtained using <a href="Bayes theorem.html">Bayes&#39; theorm</a>,</p>
+
+<p>\[  p(Z | Y ; \theta^{(t)}) = \frac{ p(Y | Z ; \theta^{(t)}) \; p(Z ; \theta^{(t)}) }{ p(Y ; \theta^{(t)}) }
+                           = \frac{ p(Y | Z ; \theta^{(t)}) \; p(Z ; \theta^{(t)}) }{ \sum_{k=1}^K p(Y | Z_k ; \theta^{(t)}) \; p(Z_k ; \theta^{(t)}) }  \]</p>
+
+<hr/>
+
+<h3>M step</h3>
+
+<p>This computes parameters maximising the the expected log-likelihood found in the E step. </p>
+
+<p>\[  \theta^{(t)} = \underset{\theta} {\mathrm{argmax}} \; Q(\theta | \theta^{(t)})  \]</p>
+
+<p>The parameter estimates \( \theta^{(t)} \) are then used in the next iteration of the E step.</p>
+
+<hr/>
+
+<h3>Example: Fitting a mixture of two univariate normal distributions</h3>
+
+<p>Consider a sample of \( n \) independent observations from a mixture of two univariate normal distributions.</p>
+
+<p>\[  Y_i | Z_i = 1 \sim N(\mu_1, \sigma_1^2)  \]</p>
+
+<p>\[  Y_i | Z_i = 2 \sim N(\mu_2, \sigma_2^2)  \]</p>
+
+<p>where, \( P(Z_i = 1) = w_1 \) and \( P(Z_i = 2) = w_2 = 1 - w_1 \).</p>
+
+<p>The likelihood function is,</p>
+
+<p>\[  L(\theta ; Y, Z) = \prod_{i=1}^n \; \sum_{k=1}^2 \; I(z_i = k) \; w_k \; f(y_i ; \mu_k, \sigma_k)  \]</p>
+
+<p>where,</p>
+
+<p>\( I(z_i = k) \) is an indicator function that equals 1 if \( z_i=k \) and 0 otherwise</p>
+
+<p>\( f(y ; \mu_k, \sigma_k) \) is the pdf of mixture component \( k \)</p>
+
+<p>\( \theta = (w_1, \mu_1, \mu_2, \sigma_1, \sigma_2) \)</p>
+
+<p>And the log-likelihood function is,</p>
+
+<p>\[  \ell(\theta ; Y, Z) = \sum_{i=1}^n \; \sum_{k=1}^2 \; I(z_i = k) \; \left[ \log(w_k) + \log(f(y_i ; \mu_k, \sigma_k)) \right]  \]</p>
+
+<h4>E step</h4>
+
+<p>The form for \( p(Z | Y ; \theta^{(t)}) \) in this case is,</p>
+
+<p>\[  p(Z | Y ; \theta^{(t)}) = \frac{ p(Y | Z ; \theta^{(t)}) \; p(Z ; \theta^{(t)}) }{ p(Y | Z_1 ; \theta^{(t)}) \; p(Z_1 ; \theta^{(t)}) + p(Y | Z_2 ; \theta^{(t)}) \; p(Z_2 ; \theta^{(t)}) }  \]</p>
+
+<p>Or more specifically,</p>
+
+<p>\[  p(Z_i=k | Y_i=y_i ; \theta^{(t)}) = \frac{ f(y_i ; \mu_k^{(t)}, \sigma_k^{(t)}) \; w_k^{(t)} }{ f(y_i ; \mu_1^{(t)}, \sigma_1^{(t)}) \; w_1^{(t)} + f(y_i ; \mu_2^{(t)}, \sigma_2^{(t)}) \; w_2^{(t)} } = \tau_{ik}^{(t)}  \]</p>
+
+<p>Notice that the denominator is equivalent to the density of the mixture distribution, evaluted at the current values of the parameters. The fraction therefore gives the proportion of the height of the mixture at point \( y_i \) attributable to component distribution \( k \).</p>
+
+<p>The expected value of the log-likelhood can be written as,</p>
+
+<p>\[  
+\begin{align}
+Q(\theta | \theta^{(t)}) 
+&= E_{Z \mid Y ; \theta^{(t)}} \left[ \ell(\theta ; Y, Z) \right] \\
+&= E_{Z \mid Y ; \theta^{(t)}} \left[ \sum_{i=1}^n \ell(\theta ; y_i, z_i) \right] \\
+&= \sum_{i=1}^n E_{Z \mid Y ; \theta^{(t)}} \left[ \ell(\theta ; y_i, z_i) \right] \\
+&= \sum_{i=1}^n \sum_{k=1}^2 \tau_{ik}^{(t)} \; I(z_i = k) \; \left[ \log(w_k) + \log(f(y_i ; \mu_k, \sigma_k)) \right] \\
+\end{align}
+ \]</p>
+
+<h4>M step</h4>
+
+<p>Since the parameters all appear in separate linear terms they can be maximised independently of each other.</p>
+
+<p>\[  w_k^{(t+1)} = \frac{1}{n} \sum_{i=1}^n \tau_{ik}^{(t)}  \]</p>
+
+<p>\[  \mu_k^{(t+1)} = \frac{ \sum_{i=1}^n \tau_{ik}^{(t)} y_i }{ \sum_{i=1}^n \tau_{ik}^{(t)} }  \]</p>
+
+<p>\[  \sigma_k^{(t+1)} = \frac{ \sum_{i=1}^n \tau_{ik}^{(t)} (x_i - \mu_k^{(t+1)})^2 }{ \sum_{i=1}^n \tau_{ik}^{(t)} }  \]</p>
+
+<h4>Termination</h4>
+
+<p>Stop the algorithm if,</p>
+
+<p>\[  \ell(\theta^{(t)}; X, Z) - \ell(\theta^{(t-1)}; X, Z) < \lambda  \]</p>
+
+<p>where \( \lambda \) is some threshold value.</p>
+
+<hr/>
+
+<h4>In R</h4>
+
+<pre><code class="r"># make some data
+n = 1000  # sample size
+w = c(0.4, 0.6)  # mixture weights
+z = sample(1:2, size = n, replace = TRUE, prob = w)  # latent grouping variable
+mu = c(1, 2)  # means
+sigma = c(0.2, 0.15)  # standard deviations
+y = rnorm(n, mu[z], sigma[z])  # data
+
+# plot the data
+breaks = seq(min(y), max(y), length = n/10)
+hist(y, prob = TRUE, breaks = breaks)
+curve(w[1] * dnorm(x, mu[1], sigma[1]) + w[2] * dnorm(x, mu[2], sigma[2]), add = TRUE, 
+    col = 4, xlim = range(y))
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAAAflBMVEX9/v0AAAAAADkAAGUAAP8AOTkAOY8AZo8AZrU5AAA5ADk5AGU5OY85ZrU5j9plAABlADllAGVlOY9lZjllZmVltf2POQCPOTmPOWWPtY+P27WP29qP2/21ZgC1Zjm1/rW1/v3ajzna/rXa/tra/v39tWX924/9/rX9/tr9/v1eUrC/AAAAKnRSTlP//////////////////////////////////////////////////////wAyqPBcAAAACXBIWXMAAAsSAAALEgHS3X78AAASmElEQVR4nO3diVbjRgKF4QgqDEw6OJ0ZnGQCE5zBi97/Bcfat1KpVKpV9/6nOTTYyLI+JFtCyw85g+yH0CPAwkR40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg7Zb+Ovh8TPPb8fHz+p/TR9vGwZ6ecke3jePWhQBwA++/ZFtgd/201EFAF/+7z6vZo+ft2OWZc95frp/es2Lm7PHvw5PX7fjw7/u8/L5/u37HH3O/nH//uf9Tg1zdf/yp5++6l+nczmEZAOBvx6yAu1/FfxH8cX9cyn540sBX9z6d3Wnr3PWVC8u6vu38PdfhLf8I+2F/o7hG7sC/vJSglUL68vL3ex6eHi/vNxlT1kJ/9z82OPnOSt+IHsr7lJ8r71/u6i/vDxPXkQSCwS+/KqQKujOpfJ9ri3/c60W9e/NDxXwz+UvQPPd9v4t/O14Xzw8B3tuNtox/OQ1Pqvn2Tn48j4tfPfrMIXPTw9/vCT9Eg8DX/RR08kW9QXx6f52rfjWGH66qN/Beh0IfDMzF+/TpG/uCsZzJp/j2/t38PefrN80pBoIfLkYrxfnd7Fmde7+mt6szhXEd+DX+hVgAN/ev1uP/8jSfonfL7x2Z6N595T6phxo+Pqdv8G7tNRX5sDhq1d1g2V2b6NeqmHDA0d40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBW4avzimQpX50KBu2CH87VseFnhM/AwQbtgh//f45+Mz2Eed40JZf4+vTRvA1fl/xXX3gyrkqwOMSPnBZ/eE7bfjem7v2HL9uRgmr6OElEd5ChActXvj6tK2S9XjCWyha+GI9/nZ8JbyjooWvwD+eCe+maOHrLXenH38ivIuihc+vh/Jcr6fppjvCWyhe+PkIbyHCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARfm9pngmQ8HtLU5Twe4vwoBEeNMKDRnjQCA8a4UEjPGiEB43woBEeNMKDRnjQCA8a4UEjPGiEB43woBEeNMKDRnjQCA8a4UEjPGiEB43woBEeNMKDphIVQutuLiO8qxSioqAXi3dzGuFdNS8q+p8Iv7dmRcXgM+H31iJ89R/C761SVHJWDDH8H+H3VpbLVcXwv4TfWzPwYvR/wu8tDfjii2jhr98/8+shy56+JjcRXpUcXoy/ihm+sM8vP09uIrwqHfj7lzHDX759VXP+KMKrksKP3KOGPzz8+Xsxx3+bLOsJryp1+Dy/HbPn/Pw4meEJr0wF363ei4jhZyO8Khm86G4j/F7Tg2/X5X2nDd97c5c1uRmlnbQXeEmEVyWBF73bCL/XNOEzQfh9RXjQpvCDHe2ihy+205dNV+QJr0oXvt6I47vlOf52fJ25hfCq5uDr9aH44fPrL+/yGwivagI/3K02AfjZCK+K8KBpw1ebbX1HeFeN4cXw+4Tfa4QHTR9+8ld6HxHeVYQHbQQvRt8n/F4jPGgr4LMA8oR3FeFBG8JPToFB+L1GeNDWwAd4e0d4VxEetD58Jrp9knvwza7KhN9TQ/jxLD68mfA7ahW8f3nCu4rwoBEetL5s/3AZwu88woO2Dt67POFdRXjQCA9a/wW823RL+N23Et63POFdRXjQCA9apzo8mR3hdx7hQSM8aBP4dq+LCn74Ze5bnvCuks3xffjRtwi/l1pVMVUm/I4jPGiEB43woBEetEa0f40xJbxfecK7ivCgrYTPsvJwG28XASC8q9bCe75MCeFdRXjQCA/aWJPwIK2H93p9GsK7ivCgER40KXy39wXh91qlKd0Jg/B7jvCgGcD7vBQZ4V1FeNAIDxrhQetLEt5KaVy7nvDWa6ZT3JnAe7z4YAV/PTwb/CzhVSUBn+fnLHuYuYTsbIRXlQh8Xlw2Osve1vws4VUlAn95Keb46/fJReIVEV5VMYYze9/EA389PH2t/1nCqzKC93e50Rq+nNPXze+EV5cA/PWQVa2c7QmvKgH49fN6VYiJ3z+RRNwlAW9WEPjeR9wlAH/9/le1sH+M/zWe8JbiHO+qbH5HSwW8tyMnCe+qNOBPT1+nldvtCK8uCfjrL+/3f5efZK/xl5e513/Cq0oD/vvnfZ6Xwt+O1XLgPF3JJ7yqJODzU/bwfpYu6ptVfMmqflD4ugCjoJkhvK8rSy++uYt3jo98xk8dvtmgG99rPOG3VMOfE9yAEz387B628cBfDyvX5MoIryoN+OU/0vTukgV8Z0V4S9WL+o9Xg58lvCpTeE8rdM2inq/xtksC3qxI4SNZvzeFL85z6GH09gg/833PKfawXZrjPcLfjtnT37/Idqxv98uavg4QXlUS8Lfj6+Xbl2TjXHXbzM8SXpUxvJ+dMdrVuTv8zErdVbokyAmvLgn4ao4/JbCXLeEt1b3Gr967mvDK0oA3ivCqFDtaEt7sMQlvoQq+3L1q5XY7wqszh8+Fhy1QJfy5PDT+8pLWzpY7hvfwBAr422/V+tr9jf2qnyW8qgTgFbvVKSO8ItXeN4RfH+EtRXhHbYHPPGyuHxwfv4+/xxNeJ67HO4rw2xrvVZEAfDXKq+B7Z3sgfPcYqcHnLR3n+E2PQXgHEd56FuA9bK4nvPUIbyPCO4rw1iseW70TBuH1HoPwDiK89WzAuz+chvDWI7yNCO8owluP8DZKE14syxJ++TEI7yDCW88KvPMTY6QJL8pmRoHwOqUIL0Q9bYR0OwfhdYoVvn+Cpaz/vW7fluZ3oHdTFBewqI9wbxXHe1nkhF8Ydv+j/Z4Qw0lX0csmX6jG8PIPws8PWwbfO0whm35rR/Cu39cnBi8kk25ua0moCL8lObyQTbp85vRSoSL8lqTwQjrp8pl9mUNF+C3JFEcv5oqbwsILPVnCzw17pDierRULgz3AO5ZPAr5MjNeG25tywq8vCfhcKjv8cvoGL1SE39Jq+OkbvFARfkvjaSF59xYrvJCOHuH1h61SlUy68e9GqAi/peF0kG6h2Tu8W/kdwY/fBoSK8FtSiRLeQnuCHy0YAiX0ZQkvH/bci/f8pBu8BwxRuaFpdvQIrzfsFOFtzvFO5ROAnzubjOzb/d+REBF+a900mD3SXPrt3tuBEBF+a8nCixWyhJcPeyypNem635MQEX5rhC9yKB87vOLk3zPfbt8Lhojw6wc2PIXldvggVxq1B1+dHtPdmMYDPxzgePZdMelGm0y91ntl2j7HE17+QfgtxQ1vdj3m4R4wXrMM71Ce8FYjvNHAxvCbrsdMeGWEt5rkmE7CLw/MFvzgxAResw3vTj5m+G0X6SS8sujg6+0u2+D7R057zS58sVuHqzGNDz5vnriFK7clDp9DzfG5DfgszN9qZOdtIPzywAZP3MZVXdKHd7as3yt8mD/SEd5sYP0nbuVU/4Sfbbfw7fssj0lP0UP45YFJ2AjvaFwX4YtLTBdXHX76mtwUC7zs1JHVKrDnnTHE4PE1x37hZlfPQge+vLz45efJTQ7hl1bldCad/3V5F3O8q50IdeAv376kF5ePHN7/fpf7gj88/Pl7Mcd/myzr3cEvrspFCS8/DV+q8Hl+O2bP+flxMsNHD+97lW5v8LM5g19elSP81nYN73mVbp/wvTd3/YsIWKv3pDWu7wAE72i5FeMcbw++WaXz0sypdgm/PDDCxwR/eSkX6/7e1euc9Ft70gnCy1uEvx3fys/n6TZbwg/aGXzzps7bljutM8HqTzr3V2KvG18UKXV473M84cc3O1k3WX6NL/405/E1Xu/0gCsmneMrPbTtDn4+wvcjvPnAslz3nFHxwYv+syC8xkD6+yxonxdyzaSTy9ve9Eh4g4F0H7onErEAb+sJ1DmEd7IZivCWIrzBQMbP0C68/FXeMryYPBvCLw+E8ODw+occYsG72PCMAC+VJ7x5tuFXHIAUG3zzCIRfNZB6nXor/PAohvGiRPa4Np5AmZgeQWEJvj7D5U7h8+7X2sUc7wF+0+gt32z/T00Y8BJ5wptnF37VroqRwetcCJPw04G4h5/KE948q/DrdlxCg7f/N0YU+MmUswmvdwXUTTfvFn48zxCe8Hbgx5MuMXjrZ8aIBH4y6WKH7+3GUew94gHe8iFrOPAj+a3w3U9rX/N46xy/Q/jppCP8+MPyZlsg+KE84c2zBr9+g6cR/EDeHvzMCboIvzwQwmPCG2z3MoPvyycHb3mzLeGNR5vwm5KepnrxvJBrJl3/yIlO3hq8GD+QU3hrx4HECW97jvcDv2n0NG7uL1o2Fx7eaGXIFL6TJ7x5KcJPdos0HW3Cb8zsrVE88LMn4bQPb/W0zHDw4z3gDSP8xgwXlITfGh786LhWw4LA2zy9aWB408m2dtJN1+WlN+nVuxim4rS7hFflC34wtuOz1ax9Ir0H8Axv8dRnYeGNJ9smeOkbyhX1HkBx6RzCKyI8Jrz5ZNsGL/uFW1FAeHsnQgoJL32t9QIveW+xou4BNjwDwss/CL9f+Ml5ojzCT7cfrKh9gC3PwPRmW3vbhoOfnjzEJ/zk1XlFhN/0yN7he1fSaa5A2rt5RUHhm1eprftjBIOXnDXG/Rzfv3k7/KZf3a3wGyd/MPjJDhHe4Udv8FYUFn5wnmfzAsFPd4HyDz98g7eiBmDTMyC8/MMHvOkuLYHhm9FOEV6ym3Ny8O3ezoTXTnZESwh4wz0bQsP3LttjXgh46cGLqcF3RzQRXjP54cr+4LvdKAz3bOjBjw6icAzfPlh7aT7zAOEHN5v8nTPLVX9QdgjffiQJP3NKkkDwJn/1CA/fXn7XPO/wc2efSgte47rHhB80e6LBUPAGf/XQu/yt05vz9WM9yjP8/Dllg8GvP+NADPDZ1vMk+IVXnD48HPzqA8/1Ln9L+C7VlSICwudi3dkDe1vOwsFvPU+CT3jp5I0BfuZ6RXNPw4esxvPfdq5L9/DtoSqS13fjzR/Wp6zOVBxdQUUx9l7hzU6S4QG+/tB/fQ8Br7O4r+6qezFM5/Dj/QHW5QteOl1jgteY6cu7CkePb/L8txz+6QlePlHjgl+Uz+rlAuG17zUzSSODX1rcr7tekgf44X796/IBL+bWPGKDX5jp1102xwf8htPieICf37oYH7xyph/tih8DfP+PRetyDt++Ks4MIDJ4Bf3Ki2j4gTc+V4JF+PERC8UnIdov+zf1v5R/+IHvj0OXENmwvPh1mFyGIhx8vStJf7PC6nX5ZfjLSznUx8/JLWP48agLIabftvsb7+hmMZi7hRAGp9t1enP/Lmav84vwt+Nb+fn89DW+SQlfqnt54k5uFr1CPP6a5y9MFveL8Nfvn4PPvRTwYvbkNonAp/X4qjdSMzmZ44XzHVQim/DhH1+s/TPt8mv89bDqNV40y3isCR/+8Vf+bdniu/rqBRF2wkfx+PrZXJ1bNer7nPChH18/bfjem7v++m2vjIXNDTzbV4QHbcuWO5ZwW9bjWcJt2XLHEo5zPGhbttyxhOO7etAIDxrhQSM8aIQHjfCguYMP+Xcq+ILCOxsyB29h8IQHHTzhQQdPeNDBEx508IQHHTzhQQfPDTigER40woNGeNAIDxrhQSM8aIQHjfCgER40+/DXQ1YfdHPKnByHcfnpc/RATgbvZOyLI1CrI5OcjH03+MWxtw5fHHJ1ei7/+/Fme+BF5/oJ9R7IxeCdjP31l/f88s/33NHYd4NfHnvr8MXBldVMc/vt3fbA7308/FHNkt0DORm8k7E/F9SliZOx7wa/PPbW4S/fvsrfvPqgOwezTT29ugdyMnhXY1+Ps6ux15721uGLo2rr53Zf6LiYb2qZ7oGcDN7V2N+Or8UnV2NfD3557B3O8WUOXin9zPFl9sf+enitHsXN2DeDL1OOvcPX+OUHN+vi8jXeMfzlpR6im7FvB1/mF75Y1lRvV4ul2e13ZzLdAzkZvJOx72CcjH03+OWxd7UeX0y++7rkg4O3L8Wgiw+H6/Guxv5UHuby5mrse4NfHHtuuQON8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuFBIzxohAeN8KARHjTCg0Z40AgPGuGrPt7Kg1twInzV+bX4BxThq66/fv3XxVHd0Ub4qttv//kVaUlP+KbTv6GW9IRvqk8hAhPh61wc1xtzhK+7/Bx6DPxG+KqTiwO6Y47woBEeNMKDRnjQCA8a4UEjPGiEB43woBEeNMKDRnjQCA8a4UEjPGiEB+3/5h0oCS/WNxgAAAAASUVORK5CYII=" alt="plot of chunk unnamed-chunk-1"/> </p>
+
+<pre><code class="r"># helper functions
+mixture.density = function(y, mu, sigma, w, K) {
+    apply(sapply(1:K, function(k) dnorm(y, mu[k], sigma[k]) * w[k]), 1, sum)
+}
+
+calculate.tau = function(y, mu, sigma, w, K) {
+    denominator = mixture.density(y, mu, sigma, w, K)
+    sapply(1:K, function(k) dnorm(y, mu[k], sigma[k]) * w[k]/denominator)
+}
+
+calculate.loglik = function(y, mu, sigma, w, tau, K) {
+    sum(sapply(1:K, function(k) tau[, k] * (log(w[k]) + dnorm(y, mu[k], sigma[k], 
+        log = TRUE))))
+}
+
+predict.Z = function(tau) apply(tau, 1, function(x) which(x &lt; (1/ncol(tau))))
+
+# EM function
+EM = function(y, mu, sigma, w, threshold = 1e-05) {
+
+    K = length(mu)
+
+    continue = TRUE
+
+    counter = 0
+
+    while (continue) {
+
+        # store current values
+        mu0 = mu
+        sigma0 = sigma
+        w0 = w
+
+        # E step
+        tau = calculate.tau(y, mu, sigma, w, K)
+
+        # M step
+        for (k in 1:K) {
+
+            w[k] = mean(tau[, k])
+
+            mu[k] = sum(tau[, k] * y)/sum(tau[, k])
+
+            sigma[k] = sqrt(sum(tau[, k] * (y - mu[k])^2)/sum(tau[, k]))  # uses updated mu
+
+        }
+
+        # terminate
+        difference = abs(calculate.loglik(y, mu0, sigma0, w0, tau, K) - calculate.loglik(y, 
+            mu, sigma, w, tau, K))
+        continue = difference &gt; threshold
+        counter = counter + 1
+
+    }
+
+    return(list(z = predict.Z(tau), mu = mu, sigma = sigma, w = w, K = K, iterations = counter))
+
+}
+
+# Give it a try
+results = EM(y, mu, sigma, w)
+results$mu
+</code></pre>
+
+<pre><code>## [1] 0.9982 1.9973
+</code></pre>
+
+<pre><code class="r">results$sigma
+</code></pre>
+
+<pre><code>## [1] 0.1850 0.1527
+</code></pre>
+
+<pre><code class="r">hist(y[results$z == 1], xlim = range(y), col = 2, breaks = breaks, xlab = &quot;y&quot;, 
+    main = &quot;EM results&quot;)
+hist(y[results$z == 2], col = 4, breaks = breaks, add = TRUE)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAAAkFBMVEX9/v0AAAAAADkAAGUAAP8AOTkAOY8AZrU5AAA5ADk5AGU5OQA5OY85ZmU5ZrU5j9plAABlADllAGVlOY9lZjllZmVlj49ltbVltf2POQCPOTmPOWWPtY+P27WP2/21ZgC1Zjm124+1/rW1/tq1/v3ajzna24/a/rXa/tra/v39tWX924/9/rX9/tr9/v3/AACym958AAAAMHRSTlP/////////////////////////////////////////////////////////////AP/cg8KHAAAACXBIWXMAAAsSAAALEgHS3X78AAANKElEQVR4nO3dC3vayBmG4VWc2m6aFpLttna6a3ow25qT//+/q45ISGLwSPOBRu/zXJt1AvZ48J0RiID004Ek++nWE6DbBLxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLJgG/WyZZn172z0mySC9YJ8n928e+8u71cFg9GU/wBqnBf/pTKp75e8CvEuDjbLcsmVP4v6aSu+WfH4tLsgvSvxDZJiDX3T4mSfoJ++f8s+7fUvj/pH9LkofqmtkkB//r49Nhk/ztCJ9ki3+VbxEW5abh/q0LX11z09sRMhH4pAL99NtycVjf/auGf8jWeb79v3vdHi+u4YtNfXXNbJKDf1nd/+/5/vd6U/9ySLcA5WOA/BNbm/oCvrpmNonA15v6l/Xdv5eLbT98fk+ePwhsw1fX3PR2hEwPfvv4S/a/Jvzpdjx1Tu8BntIHfE348pqrz90qEfhiST9lzukfmnfm+SJelXcF+bJOcuvighI+eTheM5f04FPHh0MLPofOLsl8s0uyr/h7talPLyz+TsxoS68BT92AFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcN+BuXH5XpBt8X+BuXvL+/Ay/YdOGLQ/vN6dh+k2qy8Pvn4jCem5kdvXkqTRZ+9/315COFbbLwrHjbJgtfHQiW+3ibpgtPpsUEn1QFn41gE4fffunZ0gMfoMnCV8d677mTBz5Ak4Uv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" alt="plot of chunk unnamed-chunk-2"/> </p>
+
+<pre><code class="r"># check with mixtools package
+suppressMessages(require(mixtools))  # prevents annoying messages
+capture.output(check &lt;- normalmixEM(y))  # suppresses auto printing
+</code></pre>
+
+<pre><code>## [1] &quot;number of iterations= 13 &quot;
+</code></pre>
+
+<pre><code class="r">check$mu
+</code></pre>
+
+<pre><code>## [1] 0.9982 1.9973
+</code></pre>
+
+<pre><code class="r">check$sigma
+</code></pre>
+
+<pre><code>## [1] 0.1850 0.1527
+</code></pre>
+
+<hr/>
+
+<h3>Example: Fitting a mixture of two bivariate normal distributions</h3>
+
+<p>To do.</p>
+
+<hr/>
+
+<p><a href="index.html#E">(back to E)</a> </p>
+
+<p><a href="index.html">(back to index)</a> </p>
+
+</body>
+
+</html>
+

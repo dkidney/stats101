@@ -1,0 +1,81 @@
+
+## T statistic
+
+********************************************************************************
+
+The T statistc is a ratio of two random variables. 
+
+$$ T = \frac{Z}{\sqrt{V/\nu}} \sim t_{(\nu)} $$
+
+where,
+
+1. $Z$ has a standard normal distribution
+2. $V$ has a chi-squared distribution with $\nu$ degrees of freedom
+3. $Z$ and $V$ are independent
+
+and where $t_{(\nu)}$ is the t distribution with $\nu$ degrees of freedom.
+
+********************************************************************************
+
+### Derivation 
+
+Consider a one-sample T-test where we want to test the hypothesis that the popultion mean is equal to some hypothesised value,
+
+$$ T = \frac{\bar{X}_n - \mu_0}{\widehat{Se}({\bar{X}_n})} $$
+
+where,
+
+* $\bar{X}_n =\widehat{\mu}$ is the mean of a sample of size $n$ and is an estimator of the population mean, $\mu$
+* $\mu_0$ is the value of $\mu$ under the null hypothesis
+* $\widehat{Se}({\bar{X}_n})$ is the estimated standard error of the estimator
+
+and where we assume that all sample values have the same variance, i.e. $Var(X)=\sigma^2$.
+
+The standard error of the estimator is typically defined as,
+
+$$ \widehat{Se}({\bar{X}_n}) = \sqrt{\widehat{\sigma}^2/n} $$
+
+(Click <a href="standard error of the sample mean.html">here</a> to see how this is derived)
+
+So substituting this into to the formula for $T$ we get,
+
+$$ \frac{\bar{X}_n - \mu_0}{\sqrt{\widehat{\sigma}^2/n}} $$
+
+If we divide the numerator and denominator by the true standard error $\sqrt{\sigma^2/n}$ we get,
+
+$$ \frac{ \left( \frac{\bar{X}_n - \mu_0 }{ \sqrt{\sigma^2/n} } \right) }{ \left( \frac{ \sqrt{\widehat{\sigma}^2/n} }{ \sqrt{\sigma^2/n} } \right) } $$
+
+Assuming $\bar{X}_n$ follows an $N(\mu_0, \sigma^2 / n)$ distribution, the numerator now follows a standard normal distribution, so we can replace is with $Z$. 
+
+$$ \frac{Z}{ \left( \frac{ \sqrt{\widehat{\sigma}^2/n} }{ \sqrt{\sigma^2/n} } \right) } $$
+
+The denominator can be simplfied by cancelling out the $n$'s and putting the remaining terms inside one square root,
+
+$$ \frac{Z}{ \sqrt{ \widehat{\sigma}^2 / \sigma^2 } } $$
+
+The population variance $\sigma^2$ is typically estimated using the sample variance,
+
+$$ \widehat{\sigma}^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2 }{n-1} = \frac{RSS}{n-1} $$
+
+Substituting this we get,
+
+$$ \frac{Z}{ \sqrt{ \frac{RSS}{n-1} / \sigma^2 } } $$
+
+And a simple rearrangement gives,
+
+$$ \frac{Z}{ \sqrt{ \frac{RSS}{\sigma^2} / n-1 } } $$
+
+Using <a href="Cochran's theorem.html">Cochran's theorem</a> we have, 
+
+$$ \frac{RSS}{\sigma^2} \sim \chi^2_{n-1} $$
+
+So, we can replace $RSS/\sigma^2$ with $V$, and $n-1$ with $\nu$, giving,
+
+$$ T = \frac{Z}{\sqrt{V/\nu}} $$
+
+********************************************************************************
+
+<a href="index.html#T">(back to T)</a> 
+
+<a href="index.html">(back to index)</a> 
+

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Exponential family</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</head>
+
+<body>
+<h2>Exponential family</h2>
+
+<hr/>
+
+<p>\[  L(\theta, \phi) = \prod_{i=1}^n \exp\left[ \frac{y_i\theta_i - b(\theta_i)}{a(\phi)} + c(y_i,\phi) \right]  \]</p>
+
+<p>where,</p>
+
+<p>\[  \mbox{E}\left[y\right] = \mu = b'(\theta)  \]</p>
+
+<p>\[  \mbox{Var}\left[y\right] = b''(\theta)a(\phi)  \]</p>
+
+<p>So \( b'(\cdot) \) is the inverse link function, which implies,</p>
+
+<p>\[  \theta = g(\mu) = \eta = X\beta  \]</p>
+
+<h4>Derivatives</h4>
+
+<p>\[  \frac{\partial\mu}{\partial\theta} = b''(\theta) \implies \frac{\partial\theta}{\partial\mu} = \frac{1}{b''(\theta)}  \]</p>
+
+<p>\[  \frac{\partial\eta}{\partial\mu} = g'(\mu) \implies \frac{\partial\mu}{\partial\eta} = \frac{1}{g'(\mu)}  \]</p>
+
+<p>\[  \frac{\partial\eta}{\partial\beta_j} = x_j  \]</p>
+
+<hr/>
+
+<h3>Log likelihood</h3>
+
+<p>\[  \ell(\theta, \phi) = \ell(\beta, \phi) = \sum_{i=1}^n \frac{y_i\theta_i - b(\theta_i)}{a(\phi)} + c(y_i,\phi)  \]</p>
+
+<h4>First derivative</h4>
+
+<p>\[  \frac{ \partial\ell }{ \partial\theta } = \sum_{i=1}^n \frac{y_i - b'(\theta_i)}{a(\phi)}  \]</p>
+
+<p>\[ 
+  \frac{ \partial\ell }{ \partial\beta_j } 
+= \sum_{i=1}^n \frac{ \partial\ell }{ \partial\beta_j }  
+= \sum_{i=1}^n \frac{ \partial\ell }{ \partial\theta_i } \frac{ \partial\theta_i }{ \partial\mu_i } \frac{ \partial\mu_i }{ \partial\eta_i } \frac{ \partial\eta_i }{ \partial\beta_j } 
+= \sum_{i=1}^n \frac{y_i - b'(\theta_i)}{a(\phi)} \frac{1}{b''(\theta_i)} \frac{1}{g'(\mu_i)} x_{ij}
+ \]</p>
+
+<p>\[  = \sum_{i=1}^n \frac{y_i - \mbox{E}\left[y_i\right]}{\mbox{Var}\left[y_i\right]} \frac{1}{g'(\mu_i)} x_{ij} = X^TV(y-\mu)  \]</p>
+
+<p>where,</p>
+
+<p>\[  V = Diag\left( \frac{1}{\mbox{Var}\left[y_1\right]g'(\mu_1)} \cdots \frac{1}{\mbox{Var}\left[y_n\right]g'(\mu_n)} \right)  \]</p>
+
+<h4>Second derivative</h4>
+
+<p>\[  \frac{ \partial^2\ell }{ \partial\theta^2 } = -\frac{b''(\theta)}{a(\phi)}  \]</p>
+
+<hr/>
+
+<h3>The score statistic</h3>
+
+<p>The first derivative of the likelihood is called the score statistic, and can be regarded as a random variable,</p>
+
+<p>\[  U = \frac{ \partial }{ \partial\theta } \ell(\theta ; Y) = \frac{Y - b'(\theta)}{a(\phi)}  \]</p>
+
+<p>The second derivative of the likelihood (i.e. the first derivative of the score statistic) can also be regarded as a random variable,</p>
+
+<p>\[  U' = \frac{ \partial^2 }{ \partial\theta^2 } \ell(\theta ; Y)  \]</p>
+
+<p>The expected value of the score statistic is straightforward, given \( \mbox{E}\left[y\right] = b'(\theta) \),</p>
+
+<p>\[  \mbox{E}\left[U\right] = 0  \]</p>
+
+<p>The variance of the score statistic is given by,</p>
+
+<p>\[  \mbox{Var}\left[U\right] = \mbox{E}\left[U^2\right] = -\mbox{E}\left[U'\right] = -\mbox{E}\left[ \frac{ \partial^2 }{ \partial\theta^2 } \ell(\theta ; Y) \right]  \]</p>
+
+<p>which is the <a href="Maximum likelihood.html#Fisher information">Fisher information</a>.</p>
+
+<hr/>
+
+<h4>See also</h4>
+
+<p><a href="Fisher scoring.html">Fisher scoring</a> </p>
+
+<hr/>
+
+<p><a href="index.html#E">(back to E)</a> </p>
+
+<p><a href="index.html">(back to Index)</a> </p>
+
+</body>
+
+</html>
+

@@ -1,0 +1,93 @@
+
+## Exponential distribution
+
+********************************************************************************
+
+### Pdf
+
+$$ f(x) = \lambda e^{-\lambda x} $$
+
+For example, the distribution with rate parameter $\lambda=0.05$ looks like,
+
+```{r, fig.height = 5}
+lambda = 0.5
+xmax = 10
+curve(dexp(x, lambda), col = 4, main = paste("pdf of the exponential distribution (lambda = ", lambda, ")", sep=""), ylab = "Density", xlim = c(0,xmax), ylim = c(0, dexp(0, lambda)), from = 0, xaxs = "i", yaxs = "i")
+```
+
+The rate parameter does **not** tell you the relative decrease in $f(x)$ as x increases by 1.
+
+```{r, fig.height = 5}
+curve(dexp(x, lambda), col = 4, main = paste("pdf of the exponential distribution (lambda = ", lambda, ")", sep=""), ylab = "Density", xlim = c(0,xmax), ylim = c(0, dexp(0, lambda)), from = 0, xaxs = "i", yaxs = "i")
+points(1:xmax, dexp(0, lambda)*(1-lambda)^(1:xmax), pch = 19, col = 2)
+```
+
+I wonder what it does mean...
+
+********************************************************************************
+
+### Cdf
+
+$$ F(x) = 1 - e^{-\lambda x} $$
+
+#### Derivation
+
+$$ 
+\begin{align}
+F(x) &= \int_{-\infty}^x \lambda e^{-\lambda x} \; dx \\ 
+     &= 
+\end{align}
+$$
+
+********************************************************************************
+
+### Expected value
+
+$$ E[X] = \frac{1}{\lambda} $$
+
+#### Derivation
+
+$$ 
+\begin{align}
+E[X] &= \int_{-\infty}^\infty x \; \lambda e^{-\lambda x} \; dx \\ 
+     &= 
+\end{align}
+$$
+
+********************************************************************************
+
+### Variance
+
+$$ Var[X] = \frac{1}{\lambda^2} $$
+
+#### Derivation
+
+********************************************************************************
+
+### Memoryless property
+
+The probablity that an event will occur in a time interval of length $d$, given that it has not already occured by time $x$, depends on $s$ but not on $x$. 
+
+This would be like saying that the probability of you dying in the next $d$ years only depends on $d$ and not on how old you already are.
+
+$$ 
+\begin{align}
+P(X \leq x + d \mid X > x) 
+  &= \frac{ P(X \leq x + d \cap X > x)  }{ P(X > x)  } \\
+  &= \frac{ P(x < X \leq x + d)  }{ P(X > x) } \\
+  &= \frac{ F(x + d) - F(x) }{ 1 - F(x) } \\
+  &= \frac{ \left[ 1 - e^{-\lambda (x + d)} \right] - \left[ 1 - e^{-\lambda x} \right] }{ 1 - \left[ 1 - e^{-\lambda x} \right] } \\
+  &= \frac{ e^{-\lambda x} - e^{-\lambda (x + d)} }{ e^{-\lambda x} } \\
+  &= \frac{ e^{-\lambda x} - e^{-\lambda x }e^{-\lambda d} }{ e^{-\lambda x} } \\
+  &= 1 - e^{-\lambda d} \\
+  &= F(d) \\
+\end{align}
+$$
+
+
+********************************************************************************
+
+<a href="index.html#E">(back to E)</a> 
+
+<a href="index.html">(back to index)</a> 
+
