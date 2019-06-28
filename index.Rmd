@@ -10,5 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <br>
 
-### [bayes' theorem](notes/bayes-theorem.html)
-### [principal components](notes/principal-components.html)
+### [Bayes' theorem](notes/bayes-theorem.html)
+### [Principal components](notes/principal-components.html)
+### [T-statistic](notes/t-statistic.html)
