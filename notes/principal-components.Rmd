@@ -1,0 +1,233 @@
+---
+title: Principal components
+output: 
+    html_document:
+        toc: true
+        toc_depth: 2
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+  dpi = 150,
+  fig.show = "hold",
+  fig.height = 5, 
+  fig.width = 5, 
+  out.height = 300, 
+  out.width = "50%", 
+  results = "hold"
+)
+```
+
+********************************************************************************
+
+## Data
+
+$X$ is an $n$ by $p$ numeric matrix containing data on $n$ cases and $p$ variables.
+
+The $i^{th}$ row can be expressed as,
+
+$$ x_i = (x_{i1}, ..., x_{ip}) $$
+
+Each of the $p$ variables is **centred and scaled**.
+
+### Example data 
+
+Covariance matrix ($p$ = 2)
+
+```{r}
+Sigma = matrix(c(300, 15, 15, 2), ncol = 2)
+rownames(Sigma) = colnames(Sigma) = c("X1","X2")
+Sigma
+```
+
+Use this covariance matrix to draw a random sample from a multivariate normal distribution.
+
+```{r}
+set.seed(42)
+mu = c(10, 100)
+X_unscaled = mvtnorm::rmvnorm(n = 1000, mean = mu, sigma = Sigma)
+colnames(X_unscaled) = colnames(Sigma)
+```
+
+Center and scale the data
+
+```{r}
+X = apply(X_unscaled, 2, scale)
+```
+
+If $X$ has been centred and scaled then the covariance matrix will be equal to the correlation matrix
+
+```{r}
+all.equal(cov(X), cor(X))
+```
+
+```{r}
+par(mar = c(4,4,2,1))
+plot(X_unscaled, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "Original variables")
+plot(X, pch = 19, cex = 0.5, col = "grey", main = "Centred and scaled")
+```
+
+********************************************************************************
+
+## Eigenvalues and eigenvectors
+
+Eigenvectors and eigenvalues are calculated on $\mbox{Cov}[X]$, the empirical sample covariance matrix of $X$.
+
+```{r}
+e = eigen(cov(X))
+```
+
+### Eigenvectors 
+
+Eigenvectors are stored in a $p$ by $p$ matrix. The first column contains the first eigenvector, the second column contains the second eigenvector, etc.
+
+```{r}
+e$vectors
+```
+
+* The 1st eigenvector gives the direction in $X$ with the highest variance
+
+* The 2nd eigenvector gives the direction in $X$ with the 2nd highest variance, conditional on it being orthogonal to the 1st eigenvector
+
+* The 3rd eigenvector gives the direction in $X$ with the 3rd highest variance, conditional on it being orthogonal to both the 1st and 2nd eigenvectors
+
+* etc.
+
+```{r}
+par(mar = c(4,4,2,1))
+plot(X, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "1st eigenvector")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,1], y1 = e$vectors[2,1], col = 2, length = 0.05, lwd = 2)
+plot(X, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "2nd eigenvector")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,2], y1 = e$vectors[2,2], col = 2, length = 0.05, lwd = 2)
+```
+
+If $X$ has been centred and scaled then each eigenvector will be of length 1.
+
+```{r}
+apply(e$vectors, 2, function(x) sqrt(sum(x^2)))
+```
+
+The eigenvector matrix can be thought of as a rotation matrix. Rotating X using the eigenvectors gives a new set of $p$ uncorrelated variables called **principal components**, each of which is a linear combination (i.e. a weighted sum) of the columns of $X$. 
+
+An orthogonal linear transformation that transforms the data to a new coordinate system.
+
+The *values* of the principal components are called the **scores**.
+
+* The 1st column of the rotated matrix gives the scores for the 1st principal component
+
+* The 2nd column of the rotated matrix gives the scores for the 2nd principal component
+
+* etc.
+
+```{r}
+scores = X %*% e$vectors
+colnames(scores) = c("PC1","PC2")
+par(mar = c(4,4,2,1))
+plot(scores, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "PC axis 1")
+arrows(x0 = 0, y0 = 0, x1 = 1, y1 = 0, col = 2, length = 0.05, lwd = 2)
+plot(scores, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "PC axis 2")
+arrows(x0 = 0, y0 = 0, x1 = 0, y1 = 1, col = 2, length = 0.05, lwd = 2)
+```
+
+The eigenvectors are also called the **loadings** or **weights**, since they are the weights that the original variables are multiplied by to to get the component scores.
+
+```{r}
+i = 1 ; p = 1
+sum(e$vectors[,p] * X[i,])
+unname(scores[i,p])
+```
+```{r}
+i = 1 ; p = 2
+sum(e$vectors[,p] * X[i,])
+unname(scores[i,p])
+```
+
+### Eigenvalues
+
+Eigenvalues are stored in a length $p$ vector.
+
+```{r}
+e$values
+```
+
+* the 1st eigenvector has the largest eigenvalue  
+* the 2nd eigenvector has the 2nd largest eigenvalue  
+* the 3rd eigenvector has the 3rd largest eigenvalue  
+* etc  
+
+The sum of the eigenvalues is equal to the trace of the covariance matrix. If $X$ has been centred and scaled then this will be equal to $p$.
+
+```{r}
+sum(e$values)
+sum(diag(cov(X)))
+```
+
+The eigenvalues are proportional to the variance in the directions of the eigenvectors.
+
+E.g. if the variation in the direction of the 1st eigenvector is twice that of the variation in the direction of the 2nd eigenvector, then the 1st eigenvalue will be twice the size of the 2nd eigenvalue.
+
+```{r}
+e$values[1] / e$values[2]
+var(scores[,1]) / var(scores[,2])
+```
+
+The relative sizes of the eigenvalues therefore indicates the amount of variance along each principal component axis relative to the sum of variances along all the axes.
+
+```{r}
+e$values/sum(e$values)
+as.vector(apply(scores, 2, var) / sum(apply(scores, 2, var)))
+```
+
+
+```{r}
+par(mar = c(4,4,2,1))
+plot(X, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "Eigenvectors")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,], y1 = e$vectors[2,], col = 2, length = 0.05, lwd = 2)
+plot(X, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "Eigenvectors scaled by (sqrt) eigenvalues")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,]*sqrt(e$values), y1 = e$vectors[2,]*sqrt(e$values), col = 2, length = 0.05, lwd = 2)
+```
+
+********************************************************************************
+
+## Why scale?
+
+PCA is sensitive to the scaling of the variables. 
+
+```{r}
+X_centred = apply(X_unscaled, 2, scale, center = TRUE, scale = FALSE)
+e = eigen(cov(X_centred))
+e$vectors
+e$values
+par(mar = c(4,4,2,1))
+plot(X_centred, pch = 19, cex = 0.5, col = "grey", asp = 1, main = "Centred but not scaled")
+arrows(x0 = 0, y0 = 0, x1 = e$vectors[1,]*sqrt(e$values), y1 = e$vectors[2,]*sqrt(e$values), col = 2, length = 0.05, lwd = 2)
+```
+
+In this case the first eigenvalue is now much larger relative to the second eigenvalue and the eigenvectors now look almost parallel to the original axes.
+
+Scaling the columns of $X$ prior to calculating the eigenvalues avoids these effects and makes PCA less arbitrary.
+
+********************************************************************************
+
+<!-- ## Covariance -->
+
+<!-- $X^TX$ is proportional to $\mbox{Cov}[X]$. -->
+
+```{r, eval=FALSE, echo=FALSE}
+t(X) %*% X
+cov(X)
+```
+
+<!-- ******************************************************************************** -->
+
+<!-- #### See also -->
+
+<!-- <a href="Eigenvalues and eigenvectors.html">Eigenvalues and eigenvectors</a>  -->
+
+<!-- <a href="Matrix decompositions.html">Matrix decompositions</a>  -->
+
+<!-- ******************************************************************************** -->
+

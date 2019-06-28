@@ -8,10 +8,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<!-- * [principal components](notes/principal-components.html) -->
-
 <br>
 
-### [test2](notes/test.html)
-
-### [test2](notes/test.html)
+### [principal components](notes/principal-components.html)
