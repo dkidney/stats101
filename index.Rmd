@@ -12,4 +12,5 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### [Bayes' theorem](notes/bayes-theorem.html)
 ### [Principal components](notes/principal-components.html)
+### [Standard error of the sample mean](notes/standard-error-of-the-sample-mean.html)
 ### [T-statistic](notes/t-statistic.html)
