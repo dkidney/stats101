@@ -53,5 +53,4 @@ Furthermore, since $Var\left(\bar{X}_n\right) = \left[Se\left(\bar{X}_n\right)\r
 
 $$ \widehat{Var}\left(\bar{X}_n\right) = \frac{\widehat{\sigma}^2}{n} $$
 
-
 ********************************************************************************

@@ -1,0 +1,120 @@
+
+## Maximum likelihood
+
+********************************************************************************
+
+Consider a sample of data $y = (y_1,...,y_n)$, from a normal distribution. The likelihood of the data is given as,
+
+$$ L(\mu, \sigma) = \prod_{i=1}^n f(y_i \; ; \mu, \sigma) $$
+
+where,
+
+$$ f(y_i \; ; \mu, \sigma) = \frac{ 1 }{ \sigma\sqrt{2\pi} } \exp\left\{ -\frac{ (y_i - \mu)^2 }{ 2\sigma^2 } \right\} $$
+
+The log-likelihood is,
+
+$$ \ell(\mu, \sigma) = -\frac{n}{2} \log(2\pi) - n\log(\sigma) - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i-\mu)^2 $$
+
+The partial derivatives are,
+
+$$ \frac{\partial \ell}{\partial \mu} = \frac{1}{\sigma^2} \sum_{i=1}^n(y_i - \mu) \implies \hat{\mu} = \bar{y} $$
+
+$$ \frac{\partial \ell}{\partial \sigma} = -\frac{n}{\sigma} + \frac{1}{\sigma^3} \sum_{i=1}^n (y_i-\mu)^2 \implies \hat{\sigma} = \sqrt{\frac{1}{n}\sum_{i=1}^n(y_i-\bar{y})^2} $$
+
+To check that the estimates are MLEs, make sure that the <a href="Hessian matrix.html">Hessian matrix</a> evaluated at the MLEs is negative definite,
+
+$$ H = \left.\ell''(\theta) \right\rvert_{\theta = \hat{\theta}}
+= \left. \frac{\partial^2}{\partial\theta^2} \ell(\theta) \right\rvert_{\theta = \hat{\theta}} 
+= \left. \begin{pmatrix} \frac{\partial^2\ell}{\partial\mu^2} & \frac{\partial^2\ell}{\partial\mu\partial\sigma } \\ \frac{\partial^2\ell}{\partial\mu\partial\sigma} & \frac{\partial^2\ell}{\partial\sigma^2} \end{pmatrix} \right\rvert _{\hat{\mu}, \hat{\sigma}} $$
+
+********************************************************************************
+
+### Example: New Haven annual temperatures
+
+```{r}
+suppressMessages(require(datasets))
+data(nhtemp)
+
+L = 30
+mu = seq(50, 53, length = L)
+sigma = seq(0.5, 2, length = L)
+loglik.func = function(y, theta) sum(dnorm(y, theta[1], theta[2], log = TRUE))
+loglik = matrix(apply(expand.grid(mu, sigma), 1, function(x) loglik.func(nhtemp,x)), L)
+loglik[which(loglik < -140, arr.ind = TRUE)] = NA
+
+# MLEs
+opt = optim(f = loglik.func, y = nhtemp, par = c(50,0.5), lower = c(-Inf, 0), method = "L-BFGS-B", hessian = TRUE, control = list(fnscale = -1))
+
+# check estimates
+# matrixcalc::is.negative.definite(opt$hessian)
+```
+
+```{r, fig.height = 3, fig.width = 9, out.height = 200, out.width = 600, dpi = 300}
+# histogram
+par(mfrow = c(1,3))
+hist(nhtemp, main = "")
+
+# heat map
+image(mu, sigma, loglik, xlab = "mu", ylab = "sigma")
+contour(mu, sigma, loglik, add = TRUE)
+points(opt$par[1], opt$par[2], pch = 19, col = 4)
+
+# 3d surface
+# persp(mu, sigma, loglik, theta = 20, d = 2)
+zfacet <- loglik[-1, -1] + loglik[-1, -ncol(loglik)] + loglik[-nrow(loglik), -1] + loglik[-nrow(loglik), -ncol(loglik)]
+res = persp(mu, sigma, loglik, col = heat.colors(10)[cut(zfacet, 10)], theta = 20, d = 2, ltheta = 50, shade = 0.25)
+points(trans3d(opt$par[1], opt$par[2], opt$value, pmat = res), col = 4, pch = 16)
+```
+
+********************************************************************************
+
+### Fisher scoring
+
+
+********************************************************************************
+
+### Numerical maximisation
+
+This typically uses the <a href="Newton-Raphson method.html">Newton-Raphson method</a>.
+
+The second order <a href="Taylor series.html">Taylor series</a> approximation of $\ell(\theta)$ around $\hat{\theta}_j$ is given by,
+
+$$ q(\theta) = \ell(\hat{\theta}_j) + \ell'(\hat{\theta}_j)(\theta-\hat{\theta}_j) + \frac{1}{2}\ell''(\hat{\theta}_j)(\theta-\hat{\theta}_j)^2 $$
+
+The maximum of the quadratic is found by setting the first derivative to zero and solving for $\theta$,
+
+$$ q'(\theta) = \ell'(\hat{\theta}_j) + \ell''(\hat{\theta}_j)(\theta-\hat{\theta}_j) $$
+
+$$ \implies \hat{\theta}_{j+1} = \hat{\theta}_j - \frac{ \ell'(\hat{\theta}_j) }{ \ell''(\hat{\theta}_j) } $$
+
+********************************************************************************
+<a id="Fisher information"></a>
+
+### Fisher information
+
+This is the negative of the second derivative of the likelihood, with respect to the parameter vector $\theta$, evaluated at the maximum likelihood estimates $\hat{\theta}$.
+
+$$ \mathcal{I}(\theta) = -\left.\mbox{E}\left[ \frac{ \partial^2 }{ \partial \theta^2 } \ell(\theta) \right] \right\rvert_{\theta = \widehat{\theta}} $$
+
+If there are $p$ parameters, then the Fisher information is a $p$ by $p$ matrix
+
+The Fisher information is related to the asymptotic distribution of $\hat{\theta}$,
+
+$$ \widehat{\theta} \sim N\left(\theta, \; \mathcal{I}(\theta)^{-1} \right) $$
+
+#### Sample information
+
+The **sample information**, otherwise known as the **observed information** is related to the <a href="#Hessian matrix">Hessian matrix</a>,,
+
+$$ \mathcal{J}(\theta) = -\left. \frac{ \partial^2 }{ \partial \theta^2 } \ell(\theta) \right\rvert_{\theta = \widehat{\theta}} = -H $$
+
+In practice we often use the negative of the Hessian to estimate the covariance of the MLEs, 
+
+$$ \widehat{\mbox{Cov}}\left[\hat{\theta}\right] = -H^{-1} $$
+
+A word of warning when using numerical optimization algorithms in R: If you maximise the log-likelihood, then functions like **nlm** and **optim** will give you the Hessian, but if you minimise the negative log-likelihood then they will give you the *negative* Hessian.
+
+(Also, don't confuse the Hessian with the <a href="Jacobian.html">Jacobian</a> , which is a square matrix of *first*-order partial derivatives of a function.)
+
+********************************************************************************
+

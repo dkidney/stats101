@@ -1,0 +1,168 @@
+---
+title: Delta method
+output: 
+    html_document:
+        toc: true
+        toc_depth: 2
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+  dpi = 150,
+  fig.show = "hold",
+  fig.height = 5,
+  fig.width = 7, 
+  # out.height = 300, 
+  out.width = "75%", 
+  results = "hold",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+********************************************************************************
+
+This is a method for obtaining the variance of a function of estimated parameters.
+
+$$
+\widehat{\mbox{Var}}\left[ f\left( \widehat{\theta} \right) \right] = 
+\left( \frac{\partial f }{ \partial\theta } \right)_{\theta=\widehat{\theta}}^T
+\; \widehat{\mbox{Cov}}\left[ \widehat{\theta} \right] \;
+\left( \frac{\partial f }{ \partial\theta } \right)_{\theta=\widehat{\theta}}
+$$
+
+where,
+
+$\theta$ is a parameter vector estimated by $\widehat{\theta}$
+
+$\widehat{\mbox{Cov}}\left[ \widehat{\theta} \right]$ is the estimated variance covariance matrix for the estimated parameters
+
+and,
+
+$$
+\left( \frac{\partial f }{ \partial\theta } \right) =
+\begin{pmatrix}
+\frac{\partial f }{ \partial\theta_1 } \\ 
+\frac{\partial f }{ \partial\theta_2 } \\ 
+\vdots 
+\end{pmatrix}
+$$
+
+********************************************************************************
+
+### Example: B-splines
+
+This is a linear example, so there are probably simpler ways to do the same thing, but it's good for illustration.
+
+Consider the following data set which is generated from an underlying sine wave,
+
+```{r}
+n = 100
+x = seq(0, 2*pi, length = n)
+mu = sin(x)
+sigma = 0.5
+y = rnorm(n, mu, sigma)
+plot(x, y, pch = 19, col = "grey", main = "Example data")
+lines(x, mu, col = 4)
+```
+
+Let's use a cubic B-spline with 5 degrees of freedom to model the data.
+
+```{r}
+X = splines::bs(x, df = 5, degree = 3, intercept = TRUE)
+model = lm(y ~ 0 + X)
+preds = predict(model, se = TRUE)
+plot(x, y, pch = 19, col = "grey", main = "Fitted values and 95% CI for the mean")
+lines(x, preds$fit, col = 2)
+lines(x, preds$fit - 1.96 * preds$se.fit, col = 2, lty = 2)
+lines(x, preds$fit + 1.96 * preds$se.fit, col = 2, lty = 2)
+```
+
+Now let's try and get the same confidence intervals using the delta method.
+
+First we'll write a function to represent the B-spline, which takes x-values and five parameters (X1 to X5) as input.
+
+```{r}
+f = function(x, X1, X2, X3, X4, X5){
+  X = splines::bs(x, df = 5, degree = 3, intercept = TRUE)
+  as.numeric(X %*% c(X1, X2, X3, X4, X5))
+}
+```
+
+Using this function inside another function called **numericDeriv** we can calculate the dervatives and get standard errors for the fitted function at any point on the x-axis (but we'll use the original x-values for convenience).
+
+```{r}
+delta_func = function(x, coef, vcov){
+  stopifnot(length(coef) == nrow(vcov))
+  stopifnot(length(coef) == ncol(vcov))
+  X1 = coef[1]
+  X2 = coef[2]
+  X3 = coef[3]
+  X4 = coef[4]
+  X5 = coef[5]
+  f_call = quote(f(x, X1, X2, X3, X4, X5))
+  grad = attr(numericDeriv(f_call, c("X1", "X2", "X3", "X4", "X5")), "gradient")
+  var = sapply(1:n, function(i) t(grad[i,]) %*% vcov %*% grad[i,])
+  estimate = eval(f_call)
+  list(
+    fit   = estimate,
+    lower = estimate - 1.96 * sqrt(var),
+    upper = estimate + 1.96 * sqrt(var)
+  )
+}
+intervals = delta_func(x, coef(model), vcov(model))
+plot(x, y, pch = 19, col = "grey", 
+     main = "Fitted values and 95% CI calculated using the delta method")
+lines(x, intervals$fit, col = 2)
+lines(x, intervals$lower, col = "darkgreen", lty = 2)
+lines(x, intervals$upper, col = "darkgreen", lty = 2)
+```
+
+A more generalised and 'tidier' alternative:
+
+```{r}
+delta_func2 = function(.f, .coef, .vcov, ...){
+  `%>%` <- magrittr::`%>%`
+  stopifnot(length(.coef) == nrow(.vcov))
+  stopifnot(length(.coef) == ncol(.vcov))
+  stopifnot(names(.coef) == rownames(.vcov))
+  stopifnot(names(.coef) == colnames(.vcov))
+  args = as.list(formals(.f))
+  stopifnot(all(names(.coef) %in% names(args)))
+  dots = list(...)
+  for (i in names(dots)) {
+    assign(i, dots[[i]])
+    args[[i]] = dots[[i]]
+  }
+  for (i in names(.coef)) {
+    assign(i, .coef[i])
+    args[[i]] = .coef[[i]]
+  }
+  f_call = rlang::call2(".f", !!!rlang::syms(names(args)))
+  grad = f_call %>% 
+    numericDeriv(names(.coef)) %>% 
+    attr("gradient")
+  var = 1:nrow(grad) %>% 
+    purrr::map_dbl(function(i) {
+      t(grad[i,]) %*% .vcov %*% grad[i,]
+    })
+  estimate = do.call(.f, args)
+  list(
+    fit   = estimate,
+    lower = estimate - 1.96 * sqrt(var),
+    upper = estimate + 1.96 * sqrt(var)
+  )
+}
+intervals = delta_func2(f, coef(model), vcov(model), x = x)
+plot(x, y, pch = 19, col = "grey", 
+     main = "Fitted values and 95% CI calculated using the delta method")
+lines(x, intervals$fit, col = 2)
+lines(x, intervals$lower, col = "blue", lty = 2)
+lines(x, intervals$upper, col = "blue", lty = 2)
+```
+
+********************************************************************************
+

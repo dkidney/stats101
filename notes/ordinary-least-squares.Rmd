@@ -123,8 +123,3 @@ $$ = (I - H)y $$
 where $I$ is an identity matrix.
 
 ********************************************************************************
-
-<a href="index.html#H">(back to H)</a> 
-
-<a href="index.html">(back to index)</a> 
-

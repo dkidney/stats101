@@ -10,10 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <br>
 
+<!-- ### [](notes/.html) -->
 ### [Bayes' theorem](notes/bayes-theorem.html)
+### [Delta method](notes/delta-method.html)
+### [Exponential distribution](notes/exponential-distribution.html)
+### [Exponential family](notes/exponential-family.html)
+### [Hessian matrix](notes/hessian-matrix.html)
+### [Horvitz-Thompson estimator](notes/horvitz-thompson-estimator.html)
+### [Maximum likelihood](notes/maximum-likelihood.html)
+### [Newton-Raphson method](notes/newton-raphson-method.html)
 ### [Normal distribution](notes/normal-distribution.html)
 ### [Ordinary least squares](notes/ordinary-least-squares.html)
 ### [Principal components](notes/principal-components.html)
 ### [Standard error of the sample mean](notes/standard-error-of-the-sample-mean.html)
 ### [T-statistic](notes/t-statistic.html)
+### [Variance](notes/variance.html)
 
